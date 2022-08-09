@@ -4,7 +4,7 @@ This is the API for a Blog Web App. It is simle to use and integrate into your s
 
 Users can make a post and comment a post and the UserId is used to track who made a comment to a particular post.
 
-The system also allows for user verification. A verification code is sent to the email of the user.
+The system also allows for user verification. A verification email is sent to the email of the user.
 
 ## Run the aplication
 

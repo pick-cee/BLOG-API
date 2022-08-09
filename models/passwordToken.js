@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const tokenSchema = mongoose.Schema(
+const passTokenSchema = mongoose.Schema(
     {
         token: {
             type: String,
@@ -18,4 +18,4 @@ const tokenSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("token", tokenSchema);
+module.exports = mongoose.model("passwordToken", passTokenSchema);
