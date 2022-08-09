@@ -30,7 +30,7 @@ const register = async (request, response, next) => {
         }
         let userExists = await User.findOne({ email: email });
         if (userExists) {
-            response.status(400).send(`Email ${email} already exists`);
+            response.status(401).send(`Email: ${email} already exists`);
         }
         const hashedPassword = await passwordHash(password);
         const user = new User({
@@ -40,7 +40,7 @@ const register = async (request, response, next) => {
         });
         await user.save();
 
-        const random = generateToken(user._id);
+        const random = await generateToken(user._id);
         let msg = `Your details have been captured, Thank you for registering, please use this code to verify your account: ${random}. This token will expire in 5 minutes`;
         await sendMail(msg, "Onboarding Email", email);
         return response.status(200).json({
@@ -55,32 +55,32 @@ const verifyEmail = async (request, response) => {
     const userId = request.query.id;
     const token = request.body.token;
     try {
-        const user = await Token.find({ userId, token });
+        const user = await Token.findOne({ userId, token });
         const user1 = await User.findById(userId);
-        // console.log(user);
-        if (token.expiresIn > new Date().getTime()) {
+        if (user.expiresIn < new Date().getTime()) {
             return response.status(400).json({ message: "Token expired" });
-        }
-        if (!user) {
-            return response.status(400).json({
-                message: "User does not exists",
-            });
         }
         user1.isVerfied = true;
         await user1.save();
         response.status(200).json({
             message: "Email verified successully",
         });
-    } catch (error) {}
+    } catch (error) {
+        response.status(500).json({
+            message: "Some error occured, try again later",
+        });
+    }
 };
 
 const resendToken = async (request, response) => {
     const userId = request.query.userId;
-    const random = generateToken(userId);
+    const user = await User.findById(userId);
+    const email = user.email;
+    const random = await generateToken(userId);
     let msg = `Your verification code, please use this code to verify your account: ${random}. This token will expire in 5 minutes. If you did not request this, please ignore this email.`;
     await sendMail(msg, "Resend verification token", email);
     response.status(200).json({
-        message: "Tpken has been sent successfully",
+        message: "Token has been sent successfully",
     });
 };
 
