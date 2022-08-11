@@ -87,6 +87,9 @@ const verifyEmail = async (request, response) => {
 const resendToken = async (request, response) => {
     const userId = request.query.userId;
     const user = await User.findById(userId);
+    if (!user) {
+        response.status(400).json({ message: "User not found" });
+    }
     const email = user.email;
     const random = await generateToken(userId);
     let subject = "VERIFICATION CODE";
