@@ -25,11 +25,7 @@ const commentPost = async (request, response) => {
         const commentData = await newComment.save();
         post.comment.push(commentData._id);
         await post.save();
-        // const pos1 = await Post.findByIdAndUpdate(
-        //     postId,
-        //     { comment: commentData._id },
-        //     { new: true }
-        // );
+
         return response.status(200).json({
             message: "Comment posted successfully",
             comment: commentData,
