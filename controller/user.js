@@ -48,7 +48,7 @@ const register = async (request, response, next) => {
             <h1>Registration successful!</h1>
             <p>Your details have been captured.</p>
             <p>Please use this code to veriy your email: ${random}</p>
-            <p>This token will expire in 5 minutes</p>
+            <p>This token will expire in 10 minutes</p>
             <p>Akin's Blog! </p><br><br>
         </div>
         `;
@@ -97,7 +97,7 @@ const resendToken = async (request, response) => {
         <br /><div style="flex-direction:column; justify-content:center; align-items:center;">
             <h1>Request successful!</h1>
             <p>Please use this code to veriy your email: ${random}</p>
-            <p>This token will expire in 5 minutes</p>
+            <p>This token will expire in 10 minutes</p>
             <p>If you did not request this, please ignore this email. Thak you!</p>
             <p>Akin's Blog! </p><br><br>
         </div>
@@ -149,13 +149,13 @@ const forgotPassword = async (request, response) => {
             response.status(400).json({ message: "User not found" });
         }
         const token = randToken.generate(16);
-        console.log(token);
+
         let subject = "FORGOT PASSWORD";
         let html = `
         <br /><div style="flex-direction:column; justify-content:center; align-items:center;">
             <h1>Request successful!</h1>
             <p>Please use this code to reset your password: ${token}</p>
-            <p>This token will expire in 5 minutes</p>
+            <p>This token will expire in 10 minutes</p>
             <p>If you did not request this, please ignore this email. Thak you!</p>
             <p>Akin's Blog! </p><br><br>
         </div>
@@ -186,7 +186,6 @@ const resetPassword = async (request, response) => {
             response.status(401).json({ message: "Passwords do not match" });
         }
         const token1 = await passwordToken.findOne({ token: token });
-        console.log(token1);
         if (!token1) {
             response.status(401).json({ message: "Token is invalid" });
         }
@@ -194,10 +193,10 @@ const resetPassword = async (request, response) => {
             return response.status(400).json({ message: "Token expired" });
         }
         const user = await User.findOne({ _id: token1.userId });
-        // console.log(user);
+
         const hashedPassword = await passwordHash(password);
         user.password = hashedPassword;
-        // console.log(hashedPassword, password);
+
         await user.save();
         response.status(200).json({ message: "Password reset successfully" });
     } catch (error) {

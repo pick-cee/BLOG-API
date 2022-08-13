@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
+const commentRoutes = require("./routes/comment");
 require("dotenv").config();
 
 mongoose
@@ -26,6 +27,7 @@ app.get("/", (request, response) => {
 
 app.use("/blog", userRoutes);
 app.use("/blog", postRoutes);
+app.use("/blog", commentRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

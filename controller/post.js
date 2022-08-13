@@ -50,7 +50,7 @@ const getPost = async (request, response) => {
         if (!user) {
             response.status(400).send({ message: "User does not exists" });
         }
-        const posts = await Post.find().populate("userId");
+        const posts = await Post.find().populate("userId").select("-password");
         response
             .status(200)
             .json({ message: "Posts fetched successfully", posts: posts });
