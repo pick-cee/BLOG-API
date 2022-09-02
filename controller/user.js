@@ -13,6 +13,7 @@ const generateToken = async (userId) => {
     const token = new Token({
         token: random,
         userId: userId,
+        expiresIn: new Date().getTime() + 600000,
     });
     const user = await User.findByIdAndUpdate(userId, { token: random });
     await token.save();
@@ -165,6 +166,7 @@ const forgotPassword = async (request, response) => {
         const passwordToken1 = new passwordToken({
             token: token,
             userId: user._id,
+            expiresIn: new Date().getTime() + 600000,
         });
         await passwordToken1.save();
 
