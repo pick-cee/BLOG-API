@@ -16,7 +16,7 @@ process.env.NODE_ENV === "development"
           .then(() => console.log("Local DB connected successfully!!"))
           .catch((err) => console.log(err))
     : mongoose
-          .connect(MONGODB_URI_CLOUD)
+          .connect(process.env.MONGODB_URI_CLOUD)
           .then(() => console.log("Cloud DB connected successfully!!"))
           .catch((err) => console.log(err));
 
