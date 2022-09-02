@@ -34,3 +34,5 @@ The system also allows for user verification. A verification email is sent to th
    `npm install`
    <br/>
 2. Then start the server using: `npm run dev`
+
+<a href = "https://documenter.getpostman.com/view/16987750/VUxRQmph">API Documentation</a>
