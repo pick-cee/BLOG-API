@@ -137,6 +137,7 @@ const login = async (request, response) => {
     } catch (error) {
         response.status(500).json({
             message: "Some error occured!",
+            Error: error.message,
         });
     }
 };
