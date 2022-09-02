@@ -30,7 +30,7 @@ const register = async (request, response, next) => {
         }
         let userExists = await User.findOne({ email: email });
         if (userExists) {
-            response.status(401).send(`Email: ${email} already exists`);
+            return response.status(401).send(`Email: ${email} already exists`);
         }
         const hashedPassword = await passwordHash(password);
         const user = new User({
@@ -59,7 +59,7 @@ const register = async (request, response, next) => {
                 "User created successfully, check mail for verification code. Check your spam folder",
         });
     } catch (error) {
-        response.status(500).send("Some error occured, try again later");
+        return response.status(500).send("Some error occured, try again later");
     }
 };
 
@@ -74,11 +74,11 @@ const verifyEmail = async (request, response) => {
         }
         user1.isVerfied = true;
         await user1.save();
-        response.status(200).json({
+        return response.status(200).json({
             message: "Email verified successully",
         });
     } catch (error) {
-        response.status(500).json({
+        return response.status(500).json({
             message: "Some error occured, try again later",
         });
     }
@@ -88,7 +88,7 @@ const resendToken = async (request, response) => {
     const userId = request.query.userId;
     const user = await User.findById(userId);
     if (!user) {
-        response.status(400).json({ message: "User not found" });
+        return response.status(400).json({ message: "User not found" });
     }
     const email = user.email;
     const random = await generateToken(userId);
@@ -103,7 +103,7 @@ const resendToken = async (request, response) => {
         </div>
         `;
     await sendMail(html, subject, email);
-    response.status(200).json({
+    return response.status(200).json({
         message: "Token has been sent successfully. Check your spam folder",
     });
 };
@@ -113,13 +113,13 @@ const login = async (request, response) => {
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
-            response.status(400).send({
+            return response.status(400).send({
                 message: "User does not exists",
             });
         }
         const passwordMatch = await passwordCompare(password, user.password);
         if (!passwordMatch) {
-            response.status(400).send({
+            return response.status(400).send({
                 message: "Incorrect password",
             });
         }
@@ -129,7 +129,7 @@ const login = async (request, response) => {
             fullname: user.fullname,
         };
         const token = jwtSign(payload);
-        response.status(200).send({
+        return response.status(200).send({
             message: "User logged in successfully",
             data: payload,
             token: token,
@@ -146,7 +146,7 @@ const forgotPassword = async (request, response) => {
     try {
         const user = await User.findOne({ email: email });
         if (!user) {
-            response.status(400).json({ message: "User not found" });
+            return response.status(400).json({ message: "User not found" });
         }
         const token = randToken.generate(16);
 
@@ -172,7 +172,7 @@ const forgotPassword = async (request, response) => {
                 "Reset password token successfully sent!!. Check your spam folder.",
         });
     } catch (error) {
-        response.status(500).json({ message: "Some error occured!" });
+        return response.status(500).json({ message: "Some error occured!" });
     }
 };
 
@@ -180,14 +180,18 @@ const resetPassword = async (request, response) => {
     const { token, password, confirmPassword } = request.body;
     try {
         if (!password && !confirmPassword) {
-            response.status(401).json({ message: "Please fill all fields" });
+            return response
+                .status(401)
+                .json({ message: "Please fill all fields" });
         }
         if (password !== confirmPassword) {
-            response.status(401).json({ message: "Passwords do not match" });
+            return response
+                .status(401)
+                .json({ message: "Passwords do not match" });
         }
         const token1 = await passwordToken.findOne({ token: token });
         if (!token1) {
-            response.status(401).json({ message: "Token is invalid" });
+            return response.status(401).json({ message: "Token is invalid" });
         }
         if (token1.expiresIn < new Date().getTime()) {
             return response.status(400).json({ message: "Token expired" });
@@ -198,7 +202,9 @@ const resetPassword = async (request, response) => {
         user.password = hashedPassword;
 
         await user.save();
-        response.status(200).json({ message: "Password reset successfully" });
+        return response
+            .status(200)
+            .json({ message: "Password reset successfully" });
     } catch (error) {
         response.status(500).send({
             message: "Some error occured, try again later!",

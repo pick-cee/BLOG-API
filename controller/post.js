@@ -8,16 +8,20 @@ const blogPost = async (request, response) => {
         const userId = request.query.userId;
         const user = await User.findById(userId);
         if (!user) {
-            response.status(400).send({ message: "User does not exists" });
+            return response
+                .status(400)
+                .send({ message: "User does not exists" });
         }
         const post1 = new Post({
             post: post,
             userId: userId,
         });
         await post1.save();
-        response.status(200).json({ message: "Blog posted successfully" });
+        return response
+            .status(200)
+            .json({ message: "Blog posted successfully" });
     } catch (error) {
-        response
+        return response
             .status(500)
             .json({ message: "Some error occured, try again later!" });
     }
@@ -26,18 +30,26 @@ const blogPost = async (request, response) => {
 const deletePost = async (request, response) => {
     try {
         const userId = request.query.userId;
-        const { postId } = request.body;
+        const postId = request.query.postId;
         const user = await User.findById(userId);
+        const post = await Post.findById(postId);
         if (!user) {
-            response.status(400).send({ message: "User does not exists" });
+            return response
+                .status(400)
+                .send({ message: "User does not exists" });
+        }
+        if (!post) {
+            return response
+                .status(400)
+                .send({ message: "Post does not exists" });
         }
         await Post.findByIdAndDelete(postId);
         await Comment.deleteMany({ postId: postId });
-        response.status(200).json({
+        return response.status(200).json({
             message: "Post deleted successfully!",
         });
     } catch (err) {
-        response
+        return response
             .status(500)
             .json({ message: "Some error occured, try again later!" });
     }
@@ -48,14 +60,16 @@ const getPost = async (request, response) => {
         const userId = request.query.userId;
         const user = await User.findById(userId);
         if (!user) {
-            response.status(400).send({ message: "User does not exists" });
+            return response
+                .status(400)
+                .send({ message: "User does not exists" });
         }
         const posts = await Post.find().populate("userId").select("-password");
-        response
+        return response
             .status(200)
             .json({ message: "Posts fetched successfully", posts: posts });
     } catch (err) {
-        response.status(500).json({
+        return response.status(500).json({
             message: "Some error occured, try again later!",
         });
     }
